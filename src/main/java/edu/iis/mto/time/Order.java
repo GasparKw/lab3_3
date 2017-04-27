@@ -31,13 +31,13 @@ public class Order {
 		requireState(State.CREATED);
 
 		orderState = State.SUBMITTED;
-		subbmitionDate = new DateTime(timeSource.currentTimeMillis());
+		subbmitionDate = new DateTime();
 
 	}
 
 	public void confirm() {
 		requireState(State.SUBMITTED);
-		int hoursElapsedAfterSubmittion = Hours.hoursBetween(subbmitionDate, new DateTime(System.currentTimeMillis())).getHours();
+		int hoursElapsedAfterSubmittion = Hours.hoursBetween(subbmitionDate, new DateTime(timeSource.currentTimeMillis())).getHours();
 		if(hoursElapsedAfterSubmittion > VALID_PERIOD_HOURS){
 			orderState = State.CANCELLED;
 			throw new OrderExpiredException();
