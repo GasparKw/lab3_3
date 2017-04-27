@@ -1,5 +1,6 @@
 package edu.iis.mto.time;
 
+import edu.iis.mto.sourcetime.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,9 +12,11 @@ public class Order {
 	private State orderState;
 	private List<OrderItem> items = new ArrayList<OrderItem>();
 	private DateTime subbmitionDate;
+	private TimeSource timeSource;
 
-	public Order() {
+	public Order(TimeSource timeSource) {
 		orderState = State.CREATED;
+		this.timeSource = timeSource; 
 	}
 
 	public void addItem(OrderItem item) {
@@ -28,13 +31,13 @@ public class Order {
 		requireState(State.CREATED);
 
 		orderState = State.SUBMITTED;
-		subbmitionDate = new DateTime();
+		subbmitionDate = new DateTime(timeSource.currentTimeMillis());
 
 	}
 
 	public void confirm() {
 		requireState(State.SUBMITTED);
-		int hoursElapsedAfterSubmittion = Hours.hoursBetween(subbmitionDate, new DateTime()).getHours();
+		int hoursElapsedAfterSubmittion = Hours.hoursBetween(subbmitionDate, new DateTime(System.currentTimeMillis())).getHours();
 		if(hoursElapsedAfterSubmittion > VALID_PERIOD_HOURS){
 			orderState = State.CANCELLED;
 			throw new OrderExpiredException();
